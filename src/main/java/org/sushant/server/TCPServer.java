@@ -17,6 +17,8 @@ public class TCPServer {
     private int PORT;
     private KVStore store;
 
+
+    @SuppressWarnings("InfiniteLoopStatements")
     public void startServer() throws IOException {
         try(ServerSocket socket = new ServerSocket(PORT)) {
             log.info("TCP Server Started on Port: {}", PORT);
@@ -63,9 +65,9 @@ public class TCPServer {
                         } else {
                             out.println("ERROR: Usage DEL key");
                         }
+
                     default:
                         out.println("ERROR: Unknown command");
-
                 }
             }
 
