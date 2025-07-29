@@ -8,7 +8,7 @@ import java.io.IOException;
 @Slf4j
 public class Main {
     public static void main(String[] args) {
-        KVStore store = new KVStore();
+        KVStore store = KVStore.getInstance();
 
         TCPServer server = new TCPServer(6349, store);
 
