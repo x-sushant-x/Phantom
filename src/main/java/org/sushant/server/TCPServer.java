@@ -65,6 +65,7 @@ public class TCPServer {
                         } else {
                             out.println("ERROR: Usage DEL key");
                         }
+                        break;
 
                     default:
                         out.println("ERROR: Unknown command");

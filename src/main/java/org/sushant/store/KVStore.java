@@ -3,12 +3,13 @@ package org.sushant.store;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.Serializable;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Data
 @Slf4j
-public class KVStore {
+public class KVStore implements Serializable {
     private ConcurrentHashMap<String, String> store;
 
     public KVStore() { this.store = new ConcurrentHashMap<>(); }
