@@ -10,9 +10,10 @@ import java.io.IOException;
 @Slf4j
 public class Main {
     public static void main(String[] args) {
-        KVStore store = KVStore.getInstance();
-        SnapshotManager snapshotManager = new SnapshotManager("store.snapshot", store);
+        SnapshotManager snapshotManager = new SnapshotManager("store.snapshot", null);
         snapshotManager.startSnapshotScheduler();
+
+        KVStore store = snapshotManager.loadSnapshot();
 
         TCPServer server = new TCPServer(6349, store);
 
