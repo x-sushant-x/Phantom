@@ -17,10 +17,9 @@ public class TCPServer {
     private int PORT;
     private KVStore store;
 
-
     @SuppressWarnings("InfiniteLoopStatements")
     public void startServer() throws IOException {
-        try(ServerSocket socket = new ServerSocket(PORT)) {
+        try (ServerSocket socket = new ServerSocket(PORT)) {
             log.info("TCP Server Started on Port: {}", PORT);
 
             while (true) {
@@ -32,13 +31,14 @@ public class TCPServer {
 
     private void handleConnection(Socket conn) {
         try (BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-             PrintWriter out = new PrintWriter(conn.getOutputStream(), true)) {
+                PrintWriter out = new PrintWriter(conn.getOutputStream(), true)) {
 
             String input;
 
             while ((input = in.readLine()) != null) {
                 String[] tokens = input.split(" ", 3);
-                if(tokens.length == 0) return;
+                if (tokens.length == 0)
+                    return;
 
                 switch (tokens[0].toUpperCase()) {
                     case "SET":
@@ -62,6 +62,7 @@ public class TCPServer {
                     case "DEL":
                         if (tokens.length == 2) {
                             store.delete(tokens[1]);
+                            out.println("OK");
                         } else {
                             out.println("ERROR: Usage DEL key");
                         }
