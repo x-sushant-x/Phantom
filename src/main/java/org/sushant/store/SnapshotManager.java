@@ -27,7 +27,7 @@ public class SnapshotManager {
         }
     }
 
-    public KVStore loadSnapshot() {
+    public synchronized KVStore loadSnapshot() {
         File file = new File(SNAPSHOT_FILE);
 
         if(!file.exists()) {
