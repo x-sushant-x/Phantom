@@ -5,6 +5,7 @@ import io.javalin.http.Header;
 import lombok.extern.slf4j.Slf4j;
 import org.sushant.utils.ConfigLoader;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -21,24 +22,48 @@ public class ClusterJoiner {
 
         for (String endpoint : nodesIPs) {
             try {
-                String id = ConfigLoader.get("self.id");
-                String host = ConfigLoader.get("self.host");
-                int port = Integer.parseInt(ConfigLoader.get("self.port"));
-
-                ClusterNode node = new ClusterNode(id, host, port);
+                ClusterNode node = buildClusterNode();
 
                 HttpClient client = HttpClient.newHttpClient();
-                HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create(endpoint + "/join"))
-                        .POST(HttpRequest.BodyPublishers.ofString(new ObjectMapper().writeValueAsString(node)))
-                        .header(Header.CONTENT_TYPE, "application/json")
-                        .build();
+
+                HttpRequest request = buildHTTPRequest(endpoint, node);
 
                 HttpResponse<String> resp = client.send(request, HttpResponse.BodyHandlers.ofString());
-                log.info("Cluster join response: {} from node: {}", resp.body(), endpoint);
+
+                if (resp.statusCode() >= 200 && resp.statusCode() < 300) {
+                    log.info("Cluster join response: {} from node: {}", resp.body(), endpoint);
+                } else {
+                    log.warn("Cluster join failed with status {} from node: {}", resp.statusCode(), endpoint);
+                }
+
+            } catch (java.net.ConnectException e) {
+                log.error("Join Cluster Error. Connection refused to node: {}", endpoint);
+            } catch (java.net.SocketTimeoutException e) {
+                log.error("Join Cluster Error. Connection timed out to node: {}", endpoint);
+            } catch (java.net.UnknownHostException e) {
+                log.error("Join Cluster Error. Unknown host: {}", endpoint);
+            } catch (IOException e) {
+                log.error("Join Cluster Error. I/O error while connecting to node: {}", endpoint);
             } catch (Exception e) {
-                log.error("Failed to join cluster via: {}", endpoint);
+                log.error("Join Cluster Error. Unexpected error while joining cluster via: {}", endpoint);
             }
         }
+    }
+
+    private HttpRequest buildHTTPRequest(String endpoint, ClusterNode node) throws Exception {
+
+        return HttpRequest.newBuilder()
+                .uri(URI.create(endpoint + "/join"))
+                .POST(HttpRequest.BodyPublishers.ofString(new ObjectMapper().writeValueAsString(node)))
+                .header(Header.CONTENT_TYPE, "application/json")
+                .build();
+    }
+
+    private ClusterNode buildClusterNode() {
+        String id = ConfigLoader.get("self.id");
+        String host = ConfigLoader.get("self.host");
+        int port = Integer.parseInt(ConfigLoader.get("self.port"));
+
+        return new ClusterNode(id, host, port);
     }
 }
