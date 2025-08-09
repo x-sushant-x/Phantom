@@ -19,36 +19,49 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class Main {
     public static void main(String[] args) {
+        // Cluster manager holds cluster state and node list
         ClusterManager clusterManager = new ClusterManager("abc");
+
+        // Start cluster communication server (handles inter-node messages)
         ClusterServer clusterServer = new ClusterServer(3000, clusterManager);
         clusterServer.start();
 
+        // Initialize cluster joiner and heartbeat monitor
         ClusterJoiner clusterJoiner = new ClusterJoiner();
         HeartBeatTask heartBeatTask = new HeartBeatTask(clusterManager);
 
+        // Snapshot manager for persisting KV store state
         SnapshotManager snapshotManager = new SnapshotManager("store.snapshot", null);
-        snapshotManager.startSnapshotScheduler();
+        snapshotManager.startSnapshotScheduler(); // Schedule periodic snapshots
 
+        // Load persisted store or start fresh
         KVStore store = snapshotManager.loadSnapshot();
 
+        // TCP server to handle client requests
         TCPServer server = new TCPServer(6349, store);
 
         try {
             clusterJoiner.joinCluster();
 
-            new Thread(() -> {
-                try {
-                    server.startServer();
-                } catch (IOException e) {
-                    log.error("Unable to start server: {}", e.getMessage());
-                }
-            }, "TCP-Server-Thread").start();
+            // Starts TCP server in separate thread so that we don't block application.
+            startTCPServerThread(server);
 
+            // Start periodic heartbeat monitoring
             scheduleHeartBeatMonitoring(heartBeatTask);
 
         } catch (Exception e) {
             log.error("Error starting services: {}", e.getMessage(), e);
         }
+    }
+
+    private static void startTCPServerThread(TCPServer server) {
+        new Thread(() -> {
+            try {
+                server.startServer();
+            } catch (IOException e) {
+                log.error("Unable to start server: {}", e.getMessage());
+            }
+        }, "TCP-Server-Thread").start();
     }
 
     private static void scheduleHeartBeatMonitoring(HeartBeatTask heartBeatTask) {
