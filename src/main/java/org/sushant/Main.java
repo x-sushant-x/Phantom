@@ -18,7 +18,12 @@ import java.util.concurrent.TimeUnit;
 
 @Slf4j
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
+        String config = args.length > 0 ? args[0] : "application.properties";
+
+        log.info("ConfigLoader: Using config: {}", config);
+        ConfigLoader.load(config);
+
         // Cluster manager holds cluster state and node list
         ClusterManager clusterManager = new ClusterManager("abc");
 
