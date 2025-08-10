@@ -41,7 +41,7 @@ public class Main {
         TCPServer server = new TCPServer(6349, store);
 
         try {
-            clusterJoiner.joinCluster();
+            joinCluster(clusterJoiner);
 
             // Starts TCP server in separate thread so that we don't block application.
             startTCPServerThread(server);
@@ -71,4 +71,11 @@ public class Main {
         scheduler.scheduleAtFixedRate(heartBeatTask, rate, rate, TimeUnit.SECONDS);
     }
 
+    private static void joinCluster(ClusterJoiner clusterJoiner) {
+        int rate = Integer.parseInt(ConfigLoader.get("cluster.join.interval"));
+
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+        scheduler.scheduleAtFixedRate(clusterJoiner::joinCluster, rate, rate, TimeUnit.SECONDS);
+
+    }
 }
