@@ -1,0 +1,16 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="KV Server" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="org.sushant.Main" />
+    <module name="distributed_kv_store" />
+    <option name="PROGRAM_PARAMETERS" value="node1.properties" />
+    <extension name="coverage">
+      <pattern>
+        <option name="PATTERN" value="org.sushant.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+    </extension>
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

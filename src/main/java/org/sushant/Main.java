@@ -28,7 +28,8 @@ public class Main {
         ClusterManager clusterManager = new ClusterManager("abc");
 
         // Start cluster communication server (handles inter-node messages)
-        ClusterServer clusterServer = new ClusterServer(3000, clusterManager);
+        int clusterServerPort = Integer.parseInt(ConfigLoader.get("cluster.server.port"));
+        ClusterServer clusterServer = new ClusterServer(clusterServerPort, clusterManager);
         clusterServer.start();
 
         // Initialize cluster joiner and heartbeat monitor
@@ -43,7 +44,8 @@ public class Main {
         KVStore store = snapshotManager.loadSnapshot();
 
         // TCP server to handle client requests
-        TCPServer server = new TCPServer(6349, store);
+        int tcpPort = Integer.parseInt(ConfigLoader.get("tcp.port"));
+        TCPServer server = new TCPServer(tcpPort, store);
 
         try {
             joinCluster(clusterJoiner);
@@ -81,6 +83,5 @@ public class Main {
 
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         scheduler.scheduleAtFixedRate(clusterJoiner::joinCluster, rate, rate, TimeUnit.SECONDS);
-
     }
 }
