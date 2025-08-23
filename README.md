@@ -12,7 +12,7 @@ Not production-ready — built purely for experimentation.
 - [x] Static IP cluster setup
 - [x] Node-to-node connection
 - [x] Heartbeat monitoring
-- [x] Leader election / consensus
+- [ ] Leader election / consensus
 - [ ] Data replication
 - [ ] Dynamic cluster membership
 - [ ] Snapshotting & persistence
