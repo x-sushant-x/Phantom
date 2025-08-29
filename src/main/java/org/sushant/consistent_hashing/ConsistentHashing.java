@@ -2,8 +2,7 @@ package org.sushant.consistent_hashing;
 
 import lombok.RequiredArgsConstructor;
 
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.*;
 
 @RequiredArgsConstructor
 public class ConsistentHashing <T> {
@@ -39,5 +38,37 @@ public class ConsistentHashing <T> {
         }
 
         return ring.get(hash);
+    }
+
+    public List<T> getNextN(Object key, int replicationFactor) {
+        List<T> nodes = new ArrayList<>();
+
+        if(ring.isEmpty() || replicationFactor == 0) return nodes;
+
+        int hash = MurmurHasher.hash(key.toString());
+
+        SortedMap<Integer, T> tailMap = ring.tailMap(hash);
+
+        Iterator<T> it = tailMap.values().iterator();
+
+        while (nodes.size() < replicationFactor && it.hasNext()) {
+            T node = it.next();
+
+            if(!nodes.contains(node)) {
+                nodes.add(node);
+            }
+        }
+
+        if(nodes.size() < replicationFactor) {
+            for (T node : ring.values()) {
+                if (nodes.size() >= replicationFactor) break;
+
+                if (!nodes.contains(node)) {
+                    nodes.add(node);
+                }
+            }
+        }
+
+        return nodes;
     }
 }
