@@ -1,11 +1,13 @@
 package org.sushant.consistent_hashing;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
 
+@Slf4j
 @RequiredArgsConstructor
-public class ConsistentHashing <T> {
+public class HashRing<T> {
     private final int vNodes;
 
     private final SortedMap<Integer, T> ring = new TreeMap<>();

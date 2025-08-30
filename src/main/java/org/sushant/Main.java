@@ -3,6 +3,8 @@ package org.sushant;
 import lombok.extern.slf4j.Slf4j;
 import org.sushant.cluster.ClusterJoiner;
 import org.sushant.cluster.ClusterManager;
+import org.sushant.cluster.ClusterNode;
+import org.sushant.consistent_hashing.HashRing;
 import org.sushant.monitoring.HeartBeatTask;
 import org.sushant.server.ClusterServer;
 import org.sushant.server.TCPServer;
@@ -24,8 +26,12 @@ public class Main {
         log.info("ConfigLoader: Using config: {}", config);
         ConfigLoader.load(config);
 
+        // HashRing for distributing data across nodes.
+        HashRing<ClusterNode> hashRing = new HashRing<>(2);
+        hashRing.add(buildCurrentNodeObject());
+
         // Cluster manager holds cluster state and node list
-        ClusterManager clusterManager = new ClusterManager("abc");
+        ClusterManager clusterManager = new ClusterManager("abc", hashRing);
 
         // Start cluster communication server (handles inter-node messages)
         int clusterServerPort = Integer.parseInt(ConfigLoader.get("cluster.server.port"));
@@ -83,5 +89,14 @@ public class Main {
 
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         scheduler.scheduleAtFixedRate(clusterJoiner::joinCluster, rate, rate, TimeUnit.SECONDS);
+    }
+
+    private static ClusterNode buildCurrentNodeObject() {
+        String id = ConfigLoader.get("self.id");
+        String host = ConfigLoader.get("self.host");
+        String port = ConfigLoader.get("self.port");
+
+
+        return new ClusterNode(id, host, Integer.parseInt(port));
     }
 }
