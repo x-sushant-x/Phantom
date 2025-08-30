@@ -8,6 +8,7 @@ import org.sushant.consistent_hashing.HashRing;
 import org.sushant.monitoring.HeartBeatTask;
 import org.sushant.server.ClusterServer;
 import org.sushant.server.TCPServer;
+import org.sushant.store.KVService;
 import org.sushant.store.KVStore;
 import org.sushant.store.SnapshotManager;
 import org.sushant.utils.ConfigLoader;
@@ -31,7 +32,7 @@ public class Main {
         hashRing.add(buildCurrentNodeObject());
 
         // Cluster manager holds cluster state and node list
-        ClusterManager clusterManager = new ClusterManager("abc", hashRing);
+        ClusterManager clusterManager = new ClusterManager(ConfigLoader.get("self.id"), hashRing);
 
         // Start cluster communication server (handles inter-node messages)
         int clusterServerPort = Integer.parseInt(ConfigLoader.get("cluster.server.port"));
@@ -49,9 +50,11 @@ public class Main {
         // Load persisted store or start fresh
         KVStore store = snapshotManager.loadSnapshot();
 
+        KVService kvService = new KVService(clusterManager, hashRing, store);
+
         // TCP server to handle client requests
         int tcpPort = Integer.parseInt(ConfigLoader.get("tcp.port"));
-        TCPServer server = new TCPServer(tcpPort, store);
+        TCPServer server = new TCPServer(tcpPort, kvService);
 
         try {
             joinCluster(clusterJoiner);

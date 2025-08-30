@@ -1,6 +1,7 @@
 package org.sushant.store;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.sushant.cluster.ClusterManager;
 import org.sushant.cluster.ClusterNode;
 import org.sushant.consistent_hashing.HashRing;
@@ -8,6 +9,7 @@ import org.sushant.consistent_hashing.HashRing;
 import java.io.IOException;
 import java.util.List;
 
+@Slf4j
 @RequiredArgsConstructor
 public class KVService {
     private final ClusterManager clusterManager;
@@ -16,7 +18,7 @@ public class KVService {
     private final KVStore localStore;
 
 
-    public void put(String key, String value) {
+    public void set(String key, String value) {
         List<ClusterNode> nodes = hashRing.getNextN(key, replicationFactor);
 
         for (ClusterNode node : nodes) {
@@ -24,6 +26,7 @@ public class KVService {
                 if (node.getId().equals(clusterManager.getSelfID())) {
                     localStore.set(key, value);
                 } else {
+                    log.info("SET command forwarded to: {} on port: {}", node.getHost(), node.getPort());
                     node.set(key, value);
                 }
             } catch (Exception e) {
@@ -42,6 +45,7 @@ public class KVService {
                     return localStore.get(key);
                 } else {
                     String value = node.get(key);
+                    log.info("Retrieved ");
                     if (value != null) return value;
                 }
             } catch (IOException e) {

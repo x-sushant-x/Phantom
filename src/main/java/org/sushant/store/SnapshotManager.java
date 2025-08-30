@@ -28,19 +28,23 @@ public class SnapshotManager {
     }
 
     public synchronized KVStore loadSnapshot() {
-        File file = new File(SNAPSHOT_FILE);
+//        File file = new File(SNAPSHOT_FILE);
+//
+//        if(!file.exists()) {
+//            log.info("No snapshots found. Initializing new store");
+//            return new KVStore();
+//        }
+//
+//        try(ObjectInputStream in = new ObjectInputStream(new FileInputStream(file))) {
+//            store = (KVStore) in.readObject();
+//            log.info("Snapshot loaded from disk.");
+//        } catch (Exception e) {
+//            log.error("Failed to load snapshot. Starting fresh. Error: {}", e.getMessage());
+//        }
 
-        if(!file.exists()) {
-            log.info("No snapshots found. Initializing new store");
-            return new KVStore();
-        }
 
-        try(ObjectInputStream in = new ObjectInputStream(new FileInputStream(file))) {
-            store = (KVStore) in.readObject();
-            log.info("Snapshot loaded from disk.");
-        } catch (Exception e) {
-            log.error("Failed to load snapshot. Starting fresh. Error: {}", e.getMessage());
-        }
+        // TODO - Above functionality always give null.
+        store = new KVStore();
 
         return store;
     }

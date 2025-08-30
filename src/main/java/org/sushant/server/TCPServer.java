@@ -2,7 +2,7 @@ package org.sushant.server;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.sushant.store.KVStore;
+import org.sushant.store.KVService;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -15,7 +15,7 @@ import java.net.Socket;
 @AllArgsConstructor
 public class TCPServer {
     private int PORT;
-    private KVStore store;
+    private KVService kvService;
 
     @SuppressWarnings("InfiniteLoopStatements")
     public void startServer() throws IOException {
@@ -43,7 +43,10 @@ public class TCPServer {
                 switch (tokens[0].toUpperCase()) {
                     case "SET":
                         if (tokens.length == 3) {
-                            store.set(tokens[1], tokens[2]);
+                            String key = tokens[1];
+                            String value = tokens[2];
+
+                            kvService.set(key, value);
                             out.println("OK");
                         } else {
                             out.println("ERROR: Usage SET key value");
@@ -52,7 +55,10 @@ public class TCPServer {
 
                     case "GET":
                         if (tokens.length == 2) {
-                            String value = store.get(tokens[1]);
+                            String key = tokens[1];
+
+                            String value = kvService.get(key);
+
                             out.println(value != null ? value : "NULL");
                         } else {
                             out.println("ERROR: Usage GET key");
@@ -61,8 +67,8 @@ public class TCPServer {
 
                     case "DEL":
                         if (tokens.length == 2) {
-                            store.delete(tokens[1]);
-                            out.println("OK");
+
+                            out.println("IMPLEMENTATION PENDING");
                         } else {
                             out.println("ERROR: Usage DEL key");
                         }
