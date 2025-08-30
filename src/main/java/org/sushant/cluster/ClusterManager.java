@@ -1,5 +1,6 @@
 package org.sushant.cluster;
 
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.sushant.consistent_hashing.HashRing;
 
@@ -8,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Data
 @RequiredArgsConstructor
 public class ClusterManager {
     private final String selfID;
