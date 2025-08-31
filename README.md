@@ -13,7 +13,7 @@ Not production-ready — built purely for experimentation.
 - [x] Node-to-node connection
 - [x] Heartbeat monitoring
 - [ ] Leader election / consensus
-- [ ] Data replication
+- [x] Data replication
 - [ ] Dynamic cluster membership
 - [ ] Snapshotting & persistence
 - [ ] Fault recovery
