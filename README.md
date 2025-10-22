@@ -1,5 +1,7 @@
 # Distributed Key-Value Store
 
+**IMPORTANT:** My dopamine is dead for this language Java (🙂)
+
 A **learning project** where I’m building a key-value store from scratch in Java to understand **distributed systems** concepts.  
 Not production-ready — built purely for experimentation.
 
@@ -30,4 +32,4 @@ Not production-ready — built purely for experimentation.
 
 ## ⚠ Disclaimer
 
-Built for **learning** — not production use.
+Built for **learning** and this project is no longer active in my bucket.
