@@ -1,6 +1,6 @@
 # Distributed Key-Value Store
 
-**IMPORTANT:** My dopamine is dead for this language Java (🙂)
+**IMPORTANT:** No longer working on this project.
 
 A **learning project** where I’m building a key-value store from scratch in Java to understand **distributed systems** concepts.  
 Not production-ready — built purely for experimentation.
